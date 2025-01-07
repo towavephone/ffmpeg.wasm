@@ -185,19 +185,25 @@ export class FFmpeg {
    * @returns `true` if ffmpeg core is loaded for the first time.
    */
   public load = (
-    { classWorkerURL, ...config }: FFMessageLoadConfig = {},
+    config: FFMessageLoadConfig = {},
     { signal }: FFMessageOptions = {}
   ): Promise<IsFirst> => {
     if (!this.#worker) {
-      this.#worker = classWorkerURL ?
-        new Worker(new URL(classWorkerURL, import.meta.url), {
-          type: "module",
-        }) :
-        // We need to duplicated the code here to enable webpack
-        // to bundle worekr.js here.
-        new Worker(new URL("./worker.js", import.meta.url), {
-          type: "module",
-        });
+      // this.#worker = classWorkerURL ?
+      //   new Worker(new URL(classWorkerURL, import.meta.url), {
+      //     type: "module",
+      //   }) :
+      //   // We need to duplicated the code here to enable webpack
+      //   // to bundle worekr.js here.
+      //   new Worker(new URL("./worker.js", import.meta.url), {
+      //     type: "module",
+      //   });
+
+      // We need to duplicated the code here to enable webpack
+      // to bundle worekr.js here.
+      this.#worker = new Worker(new URL("./worker.js", import.meta.url), {
+        type: "module",
+      });
       this.#registerHandlers();
     }
     return this.#send(
